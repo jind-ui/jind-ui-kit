@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "jind-ui-kit": "*",
+    "motion": "^12.43.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.1.0",
-    "jind-ui-kit": "*"
+    "react-router-dom": "^7.1.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
