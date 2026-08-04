@@ -4,6 +4,7 @@ import {
   useCallback,
   useEffect,
   Children,
+  Fragment,
   type CSSProperties,
   type ReactNode,
   type Ref,
@@ -267,7 +268,7 @@ export function Resizable({
         };
 
         return (
-          <div key={panel.props.id ?? index}>
+          <Fragment key={panel.props.id ?? index}>
             <div style={panelStyle}>{panel.props.children}</div>
             {index < panelCount - 1 && (
               <ResizableHandle
@@ -275,7 +276,7 @@ export function Resizable({
                 onMouseDown={(e) => handleMouseDown(index, e)}
               />
             )}
-          </div>
+          </Fragment>
         );
       })}
     </div>
