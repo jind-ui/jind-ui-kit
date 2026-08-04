@@ -19,7 +19,8 @@ export interface NativeSelectProps extends PerCornerRadiusProps {
   disabled?: boolean;
   size?: 'sm' | 'md' | 'lg';
   label?: string;
-  error?: string;
+  error?: boolean;
+  helperText?: string;
   fullWidth?: boolean;
   radius?: RadiusValue;
   style?: CSSProperties;
@@ -35,7 +36,8 @@ export function NativeSelect({
   disabled = false,
   size = 'md',
   label,
-  error,
+  error = false,
+  helperText,
   fullWidth = false,
   radius = 'md',
   radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft,
@@ -48,11 +50,11 @@ export function NativeSelect({
   const [hovered, setHovered] = useState(false);
   const autoId = useId();
   const selectId = `${autoId}-select`;
+  const helperId = helperText ? `${autoId}-helper` : undefined;
 
   const height = theme.controlHeight[size];
   const radiusStyle = resolveRadiusStyle(radius, { radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft });
 
-  // Build chevron SVG data URI using the icon.default color
   const chevronColor = encodeURIComponent(theme.semantic.icon.default);
   const chevronSvg = `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 4.5L6 8L9.5 4.5' stroke='${chevronColor}' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E")`;
 
@@ -83,7 +85,7 @@ export function NativeSelect({
       ? theme.semantic.surface.subtle
       : theme.semantic.surface.card,
     border: error
-      ? `2px solid ${theme.colors.red[500]}`
+      ? `2px solid ${theme.colors.red[600]}`
       : focused
         ? `2px solid ${theme.semantic.border.focus}`
         : `1px solid ${hovered ? theme.semantic.border.strong : theme.semantic.border.default}`,
@@ -114,11 +116,10 @@ export function NativeSelect({
     outline: 'none',
   };
 
-  const errorStyle: CSSProperties = {
+  const helperStyle: CSSProperties = {
     fontFamily: theme.fontFamily.sans,
     fontSize: theme.fontSize[12],
-    color: theme.semantic.text.danger,
-    marginTop: theme.space[2],
+    color: error ? theme.colors.red[600] : theme.semantic.text.muted,
   };
 
   return (
@@ -129,7 +130,8 @@ export function NativeSelect({
         style={selectStyle}
         value={val}
         disabled={disabled}
-        aria-invalid={error ? true : undefined}
+        aria-invalid={error || undefined}
+        aria-describedby={helperId}
         data-testid="native-select"
         onChange={(e) => setVal(e.target.value)}
         onFocus={() => setFocused(true)}
@@ -148,7 +150,7 @@ export function NativeSelect({
           </option>
         ))}
       </select>
-      {error && <span style={errorStyle}>{error}</span>}
+      {helperText && <span id={helperId} style={helperStyle}>{helperText}</span>}
     </div>
   );
 }

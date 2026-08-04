@@ -9,6 +9,8 @@ const props = [
   { name: 'placeholder', type: 'string', default: "'Select'", description: 'Placeholder text when no option is selected' },
   { name: 'options', type: 'SelectOption[]', description: 'Array of string or { label, value, swatch? } options' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the select' },
   { name: 'onChange', type: '(value: string) => void', description: 'Called when the selection changes' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
@@ -69,6 +71,25 @@ export function ComponentSelect() {
 />`}
         >
           <Select options={['Small', 'Medium', 'Large']} defaultValue="Medium" />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<Select
+  options={['Apple', 'Banana', 'Cherry']}
+  placeholder="Pick a fruit"
+  error
+  helperText="Selection is required"
+/>`}
+        >
+          <Select
+            options={['Apple', 'Banana', 'Cherry']}
+            placeholder="Pick a fruit"
+            error
+            helperText="Selection is required"
+          />
         </Preview>
       </div>
 

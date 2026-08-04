@@ -48,7 +48,7 @@ export type { BadgeProps } from './Badge';
 export { Chip } from './Chip';
 export type { ChipProps } from './Chip';
 export { Card } from './Card';
-export type { CardProps } from './Card';
+export type { CardProps, CardVariant, CardHeaderProps, CardTitleProps, CardBodyProps, CardFooterProps, CardMediaProps } from './Card';
 export { ProgressStat } from './ProgressStat';
 export type { ProgressStatProps } from './ProgressStat';
 export { Avatar } from './Avatar';

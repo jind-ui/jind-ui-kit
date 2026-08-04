@@ -8,6 +8,8 @@ const props = [
   { name: 'tags', type: 'string[]', description: 'Array of tag strings to display' },
   { name: 'placeholder', type: 'string', default: "'Add tag...'", description: 'Placeholder shown when no tags are present' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the tags' },
   { name: 'onRemove', type: '(index: number) => void', description: 'Called with the index of the tag to remove' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
@@ -53,6 +55,19 @@ export function ComponentTagsInput() {
         <h2 className="section-title">Empty State</h2>
         <Preview code={`<TagsInput tags={[]} placeholder="No tags yet" />`}>
           <TagsInput tags={[]} placeholder="No tags yet" />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<TagsInput
+  tags={['React']}
+  error
+  helperText="At least 2 tags are required"
+/>`}
+        >
+          <TagsInput tags={['React']} error helperText="At least 2 tags are required" />
         </Preview>
       </div>
 

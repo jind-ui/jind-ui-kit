@@ -8,6 +8,7 @@ import {
 } from 'react';
 import type { RadiusValue } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
+import { useAutoFlip } from '../../hooks/useAutoFlip';
 import { mergeStyles, resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
 export interface HoverCardProps extends PerCornerRadiusProps {
@@ -55,8 +56,10 @@ export function HoverCard({
   const theme = useTheme();
   const radiusStyle = resolveRadiusStyle(radius, { radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft });
   const [visible, setVisible] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
   const openTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resolvedSide = useAutoFlip(cardRef, side, visible);
 
   const clearTimers = useCallback(() => {
     if (openTimerRef.current !== null) {
@@ -95,7 +98,7 @@ export function HoverCard({
 
   const cardBaseStyle: CSSProperties = {
     position: 'absolute',
-    ...getSideStyles(side, offset),
+    ...getSideStyles(resolvedSide, offset),
     ...getAlignmentStyles(align),
     background: theme.semantic.surface.card,
     border: `1px solid ${theme.semantic.border.default}`,
@@ -111,7 +114,7 @@ export function HoverCard({
   };
 
   // Apply transform for animation, merging with alignment transform
-  const translateY = side === 'bottom' ? (visible ? 0 : -4) : (visible ? 0 : 4);
+  const translateY = resolvedSide === 'bottom' ? (visible ? 0 : -4) : (visible ? 0 : 4);
   if (align === 'center') {
     cardBaseStyle.transform = `translateX(-50%) translateY(${translateY}px)`;
   } else {
@@ -126,7 +129,7 @@ export function HoverCard({
       onMouseLeave={handleMouseLeave}
     >
       {trigger}
-      <div role="tooltip" style={cardBaseStyle}>
+      <div ref={cardRef} role="tooltip" style={cardBaseStyle}>
         {children}
       </div>
     </div>

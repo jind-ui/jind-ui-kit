@@ -9,7 +9,11 @@ const props = [
   { name: 'placeholder', type: 'string', default: "'Enter a value'", description: 'Placeholder text shown when empty' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
   { name: 'iconLeft', type: 'string', description: 'Icon element rendered in the left slot' },
+  { name: 'clearable', type: 'boolean', default: 'false', description: 'Shows a clear button when the input has a value' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the input' },
   { name: 'onChange', type: '(value: string) => void', description: 'Called when the value changes' },
+  { name: 'onClear', type: '() => void', description: 'Called when the clear button is clicked (defaults to clearing the value)' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
 
@@ -42,6 +46,43 @@ export function ComponentInput() {
         <h2 className="section-title">With Icon</h2>
         <Preview code={`<Input iconLeft="@" placeholder="Username" />`}>
           <Input iconLeft="@" placeholder="Username" />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">Clearable</h2>
+        <Preview
+          code={`<Input
+  defaultValue="Click the X to clear"
+  clearable
+/>`}
+        >
+          <Input defaultValue="Click the X to clear" clearable />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Helper Text</h2>
+        <Preview
+          code={`<Input
+  placeholder="Enter your email"
+  helperText="We'll never share your email."
+/>`}
+        >
+          <Input placeholder="Enter your email" helperText="We'll never share your email." />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<Input
+  placeholder="Enter your email"
+  error
+  helperText="Email is required"
+/>`}
+        >
+          <Input placeholder="Enter your email" error helperText="Email is required" />
         </Preview>
       </div>
 

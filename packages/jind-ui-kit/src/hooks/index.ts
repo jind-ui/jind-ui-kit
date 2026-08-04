@@ -15,3 +15,5 @@ export { useAnimateValue } from './useAnimateValue';
 export type { UseAnimateValueOptions } from './useAnimateValue';
 export { usePressAnimation } from './usePressAnimation';
 export type { PressEffect, UsePressAnimationOptions, UsePressAnimationReturn } from './usePressAnimation';
+export { useAutoFlip } from './useAutoFlip';
+export type { Placement } from './useAutoFlip';

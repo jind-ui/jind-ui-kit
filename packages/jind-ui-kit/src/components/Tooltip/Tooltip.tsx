@@ -11,6 +11,7 @@ import {
 } from 'react';
 import type { RadiusValue } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
+import { useAutoFlip } from '../../hooks/useAutoFlip';
 import { resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
 export type TooltipPlacement = 'top' | 'bottom' | 'left' | 'right';
@@ -64,7 +65,9 @@ export function Tooltip({
   const radiusStyle = resolveRadiusStyle(radius, { radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft });
   const [visible, setVisible] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
   const tooltipId = useId();
+  const resolvedPlacement = useAutoFlip(tooltipRef, placement, visible);
 
   const show = useCallback(() => {
     timeoutRef.current = setTimeout(() => {
@@ -105,7 +108,7 @@ export function Tooltip({
     whiteSpace: 'nowrap',
     zIndex: 1000,
     pointerEvents: 'none',
-    ...getPlacementStyles(placement),
+    ...getPlacementStyles(resolvedPlacement),
   };
 
   return (
@@ -120,7 +123,7 @@ export function Tooltip({
         'aria-describedby': visible ? tooltipId : undefined,
       } as Record<string, unknown>)}
       {visible && (
-        <div id={tooltipId} role="tooltip" style={tooltipStyle}>
+        <div ref={tooltipRef} id={tooltipId} role="tooltip" style={tooltipStyle}>
           {content}
         </div>
       )}

@@ -11,6 +11,7 @@ import type { RadiusValue } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import { useControllableState } from '../../hooks/useControllableState';
+import { useAutoFlip } from '../../hooks/useAutoFlip';
 import { Portal } from '../../primitives/Portal/Portal';
 import { resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
@@ -49,6 +50,7 @@ export function Popover({
   const triggerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const [triggerRect, setTriggerRect] = useState<DOMRect | null>(null);
+  const resolvedPlacement = useAutoFlip(contentRef, placement, isOpen);
 
   useClickOutside(contentRef, () => setIsOpen(false), isOpen);
 
@@ -100,7 +102,7 @@ export function Popover({
       },
     };
     return {
-      ...positions[placement],
+      ...positions[resolvedPlacement],
       ...(matchTriggerWidth && { width: triggerRect.width }),
     };
   };

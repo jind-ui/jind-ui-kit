@@ -11,6 +11,8 @@ const props = [
   { name: 'onChange', type: '(value: string) => void', description: 'Called when the search value changes' },
   { name: 'onClear', type: '() => void', description: 'Called when the clear button is clicked. Falls back to clearing the value internally.' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the input' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
 
@@ -62,6 +64,19 @@ export function ComponentSearchInput() {
         <h2 className="section-title">Custom Placeholder</h2>
         <Preview code={`<SearchInput placeholder="Filter by name..." />`}>
           <SearchInput placeholder="Filter by name..." />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<SearchInput
+  placeholder="Search..."
+  error
+  helperText="Please enter a search term"
+/>`}
+        >
+          <SearchInput placeholder="Search..." error helperText="Please enter a search term" />
         </Preview>
       </div>
 

@@ -14,7 +14,8 @@ const props = [
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Control height' },
   { name: 'emptyMessage', type: 'string', default: "'No results'", description: 'Message shown when no options match the query' },
   { name: 'label', type: 'string', description: 'Label text rendered above the input' },
-  { name: 'error', type: 'string', description: 'Error message shown below the input' },
+  { name: 'error', type: 'boolean', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the input' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
 
@@ -138,13 +139,15 @@ export function ComponentCombobox() {
           code={`<Combobox
   options={fruits}
   label="Required field"
-  error="Please select a fruit"
+  error
+  helperText="Please select a fruit"
 />`}
         >
           <Combobox
             options={fruits}
             label="Required field"
-            error="Please select a fruit"
+            error
+            helperText="Please select a fruit"
           />
         </Preview>
       </div>

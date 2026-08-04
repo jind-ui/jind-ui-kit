@@ -10,7 +10,7 @@ import { transition, mergeStyles, resolveRadiusStyle, type PerCornerRadiusProps 
 import type { PressEffect } from '../../hooks/usePressAnimation';
 
 export interface IconButtonOwnProps extends PerCornerRadiusProps {
-  name: string;
+  icon: string;
   variant?: 'tile' | 'ghost';
   tone?: 'default' | 'danger';
   size?: 'lg' | 'md' | 'sm';
@@ -35,7 +35,7 @@ const sizeConfig = {
 
 export function IconButton({
   as: Component = 'button',
-  name,
+  icon,
   variant = 'tile',
   tone = 'default',
   size = 'md',
@@ -195,7 +195,7 @@ export function IconButton({
       {...rest}
     >
       <i
-        className={`iconoir-${name}`}
+        className={`iconoir-${icon}`}
         style={{ fontSize: config.icon, color: iconColor }}
         aria-hidden="true"
       />

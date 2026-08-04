@@ -3,6 +3,7 @@ import type { RadiusValue, ComboboxInputDetails, ComboboxInputReason } from '../
 import { useTheme } from '../../theme/ThemeProvider';
 import { useControllableState } from '../../hooks/useControllableState';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useAutoFlip } from '../../hooks/useAutoFlip';
 import { transition, resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
 export interface ComboboxOption {
@@ -21,7 +22,8 @@ export interface ComboboxProps extends PerCornerRadiusProps {
   size?: 'sm' | 'md' | 'lg';
   emptyMessage?: string;
   label?: string;
-  error?: string;
+  error?: boolean;
+  helperText?: string;
   radius?: RadiusValue;
   style?: CSSProperties;
   ref?: React.Ref<HTMLDivElement>;
@@ -37,7 +39,8 @@ export function Combobox({
   size = 'md',
   emptyMessage = 'No results',
   label,
-  error,
+  error = false,
+  helperText,
   radius = 'md',
   radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft,
   style,
@@ -50,13 +53,15 @@ export function Combobox({
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const baseId = useId();
+  const resolvedPlacement = useAutoFlip(dropdownRef, 'bottom', open);
   const inputId = `${baseId}-input`;
   const listboxId = `${baseId}-listbox`;
+  const helperId = helperText ? `${baseId}-helper` : undefined;
 
   useClickOutside(containerRef, () => {
     setOpen(false);
-    // Reset query to selected label when closing
     const selected = options.find((o) => o.value === val);
     setQuery(selected ? selected.label : '');
   }, open);
@@ -156,7 +161,7 @@ export function Combobox({
         ? theme.semantic.surface.card
         : theme.semantic.surface.subtle,
     border: error
-      ? `2px solid ${theme.colors.red[500]}`
+      ? `2px solid ${theme.colors.red[600]}`
       : open
         ? `2px solid ${theme.semantic.border.focus}`
         : `1px solid ${theme.semantic.border.default}`,
@@ -201,7 +206,9 @@ export function Combobox({
 
   const dropdownStyle: CSSProperties = {
     position: 'absolute',
-    top: 'calc(100% + 6px)',
+    ...(resolvedPlacement === 'bottom'
+      ? { top: 'calc(100% + 6px)' }
+      : { bottom: 'calc(100% + 6px)' }),
     left: 0,
     right: 0,
     borderRadius: theme.radius.md,
@@ -221,11 +228,10 @@ export function Combobox({
     fontFamily: theme.fontFamily.sans,
   };
 
-  const errorStyle: CSSProperties = {
+  const helperStyle: CSSProperties = {
     fontFamily: theme.fontFamily.sans,
     fontSize: theme.fontSize[12],
-    color: theme.semantic.text.danger,
-    marginTop: theme.space[2],
+    color: error ? theme.colors.red[600] : theme.semantic.text.muted,
   };
 
   return (
@@ -245,7 +251,8 @@ export function Combobox({
             aria-controls={open ? listboxId : undefined}
             aria-autocomplete="list"
             aria-activedescendant={open && highlightIndex >= 0 && highlightIndex < filtered.length ? `${baseId}-opt-${filtered[highlightIndex].value}` : undefined}
-            aria-invalid={error ? true : undefined}
+            aria-invalid={error || undefined}
+            aria-describedby={helperId}
             style={inputStyle}
             value={open ? query : (selectedOption ? selectedOption.label : query)}
             placeholder={placeholder}
@@ -272,7 +279,7 @@ export function Combobox({
         </div>
 
         {open && (
-          <div id={listboxId} role="listbox" style={dropdownStyle} data-testid="combobox-dropdown">
+          <div ref={dropdownRef} id={listboxId} role="listbox" style={dropdownStyle} data-testid="combobox-dropdown">
             {filtered.length === 0 ? (
               <div style={emptyStyle}>{emptyMessage}</div>
             ) : (
@@ -334,7 +341,7 @@ export function Combobox({
           </div>
         )}
       </div>
-      {error && <span style={errorStyle}>{error}</span>}
+      {helperText && <span id={helperId} style={helperStyle}>{helperText}</span>}
     </div>
   );
 }

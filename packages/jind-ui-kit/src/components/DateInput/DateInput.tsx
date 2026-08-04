@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect, type CSSProperties } from 'react';
+import { useState, useRef, useEffect, useId, type CSSProperties } from 'react';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { transition } from '../../utils/styles';
 
 export interface DateInputProps {
   value?: Date | null;
   onChange?: (date: Date | null) => void;
   placeholder?: string;
   disabled?: boolean;
+  error?: boolean;
+  helperText?: string;
   style?: CSSProperties;
 }
 
@@ -17,6 +20,8 @@ export interface DateRangeInputProps {
   startPlaceholder?: string;
   endPlaceholder?: string;
   disabled?: boolean;
+  error?: boolean;
+  helperText?: string;
   style?: CSSProperties;
 }
 
@@ -232,13 +237,17 @@ function TriggerShell({
   children,
   open,
   disabled,
+  error,
   onClick,
+  ariaDescribedby,
   style,
 }: {
   children: React.ReactNode;
   open: boolean;
   disabled: boolean;
+  error: boolean;
   onClick: () => void;
+  ariaDescribedby?: string;
   style?: CSSProperties;
 }) {
   const theme = useTheme();
@@ -251,14 +260,22 @@ function TriggerShell({
     padding: `0 ${theme.controlPadding.field}px`,
     borderRadius: theme.radius.sm,
     background: open ? theme.semantic.surface.card : theme.semantic.surface.subtle,
-    border: open ? `2px solid ${theme.semantic.border.focus}` : `1px solid ${theme.semantic.border.subtle}`,
-    boxShadow: open ? theme.focusRing.primary : theme.shadow.xs,
+    border: error
+      ? `2px solid ${theme.colors.red[600]}`
+      : open
+        ? `2px solid ${theme.semantic.border.focus}`
+        : `1px solid ${theme.semantic.border.subtle}`,
+    boxShadow: error
+      ? theme.focusRing.danger
+      : open
+        ? theme.focusRing.primary
+        : theme.shadow.xs,
     color: disabled ? theme.semantic.text.muted : theme.semantic.text.primary,
     fontFamily: theme.typeVariants.label.fontFamily,
     fontSize: theme.typeVariants.label.fontSize,
     fontWeight: theme.typeVariants.label.fontWeight,
     lineHeight: theme.typeVariants.label.lineHeight,
-    transition: `background-color ${theme.duration.fast}ms, border-color ${theme.duration.fast}ms, box-shadow ${theme.duration.fast}ms`,
+    transition: transition('background-color', 'border-color', 'box-shadow'),
     opacity: disabled ? 0.6 : 1,
     cursor: disabled ? 'not-allowed' : 'pointer',
     boxSizing: 'border-box',
@@ -272,6 +289,8 @@ function TriggerShell({
       tabIndex={0}
       aria-haspopup="dialog"
       aria-expanded={open}
+      aria-invalid={error || undefined}
+      aria-describedby={ariaDescribedby}
       data-testid="date-input"
       onClick={() => { if (!disabled) onClick(); }}
       onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !disabled) { e.preventDefault(); onClick(); } }}
@@ -290,41 +309,54 @@ export function DateInput({
   onChange,
   placeholder = 'Pick a date',
   disabled = false,
+  error = false,
+  helperText,
   style,
 }: DateInputProps) {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const autoId = useId();
+  const helperId = helperText ? `${autoId}-helper` : undefined;
 
   useClickOutside(containerRef, () => setOpen(false), open);
 
-  return (
-    <div ref={containerRef} style={{ position: 'relative', ...style }}>
-      <TriggerShell open={open} disabled={disabled} onClick={() => setOpen(o => !o)}>
-        <span style={{ flex: 1, color: value ? 'inherit' : theme.semantic.text.muted }}>
-          {value ? formatDate(value) : placeholder}
-        </span>
-      </TriggerShell>
+  const helperStyle: CSSProperties = {
+    fontFamily: theme.fontFamily.sans,
+    fontSize: theme.fontSize[12],
+    color: error ? theme.colors.red[600] : theme.semantic.text.muted,
+  };
 
-      {open && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 6px)',
-          left: 0,
-          zIndex: 1000,
-          background: theme.semantic.surface.card,
-          borderRadius: theme.radius.md,
-          boxShadow: theme.shadow.menu,
-          border: `1px solid ${theme.semantic.border.subtle}`,
-          padding: 16,
-        }}>
-          <InlineCalendar
-            selected={value}
-            onSelect={(d) => { onChange?.(d); setOpen(false); }}
-            onClear={value ? () => { onChange?.(null); setOpen(false); } : undefined}
-          />
-        </div>
-      )}
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.space[4], ...style }}>
+      <div ref={containerRef} style={{ position: 'relative' }}>
+        <TriggerShell open={open} disabled={disabled} error={error} onClick={() => setOpen(o => !o)} ariaDescribedby={helperId}>
+          <span style={{ flex: 1, color: value ? 'inherit' : theme.semantic.text.muted }}>
+            {value ? formatDate(value) : placeholder}
+          </span>
+        </TriggerShell>
+
+        {open && (
+          <div style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            zIndex: 1000,
+            background: theme.semantic.surface.card,
+            borderRadius: theme.radius.md,
+            boxShadow: theme.shadow.menu,
+            border: `1px solid ${theme.semantic.border.subtle}`,
+            padding: 16,
+          }}>
+            <InlineCalendar
+              selected={value}
+              onSelect={(d) => { onChange?.(d); setOpen(false); }}
+              onClear={value ? () => { onChange?.(null); setOpen(false); } : undefined}
+            />
+          </div>
+        )}
+      </div>
+      {helperText && <span id={helperId} style={helperStyle}>{helperText}</span>}
     </div>
   );
 }
@@ -336,6 +368,8 @@ export function DateRangeInput({
   startPlaceholder = 'Start date',
   endPlaceholder = 'End date',
   disabled = false,
+  error = false,
+  helperText,
   style,
 }: DateRangeInputProps) {
   const theme = useTheme();
@@ -343,6 +377,8 @@ export function DateRangeInput({
   const [picking, setPicking] = useState<'start' | 'end'>('start');
   const [hovered, setHovered] = useState<Date | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const autoId = useId();
+  const helperId = helperText ? `${autoId}-helper` : undefined;
 
   useClickOutside(containerRef, () => setOpen(false), open);
 
@@ -376,84 +412,102 @@ export function DateRangeInput({
     padding: `0 ${theme.controlPadding.field}px`,
     borderRadius: theme.radius.sm,
     background: open ? theme.semantic.surface.card : theme.semantic.surface.subtle,
-    border: open ? `2px solid ${theme.semantic.border.focus}` : `1px solid ${theme.semantic.border.subtle}`,
-    boxShadow: open ? theme.focusRing.primary : theme.shadow.xs,
+    border: error
+      ? `2px solid ${theme.colors.red[600]}`
+      : open
+        ? `2px solid ${theme.semantic.border.focus}`
+        : `1px solid ${theme.semantic.border.subtle}`,
+    boxShadow: error
+      ? theme.focusRing.danger
+      : open
+        ? theme.focusRing.primary
+        : theme.shadow.xs,
     color: disabled ? theme.semantic.text.muted : theme.semantic.text.primary,
     fontFamily: theme.typeVariants.label.fontFamily,
     fontSize: theme.typeVariants.label.fontSize,
     fontWeight: theme.typeVariants.label.fontWeight,
     lineHeight: theme.typeVariants.label.lineHeight,
-    transition: `background-color ${theme.duration.fast}ms, border-color ${theme.duration.fast}ms, box-shadow ${theme.duration.fast}ms`,
+    transition: transition('background-color', 'border-color', 'box-shadow'),
     opacity: disabled ? 0.6 : 1,
     cursor: disabled ? 'not-allowed' : 'pointer',
     boxSizing: 'border-box',
     userSelect: 'none',
-    ...style,
+  };
+
+  const helperStyle: CSSProperties = {
+    fontFamily: theme.fontFamily.sans,
+    fontSize: theme.fontSize[12],
+    color: error ? theme.colors.red[600] : theme.semantic.text.muted,
   };
 
   return (
-    <div ref={containerRef} style={{ position: 'relative' }}>
-      <div
-        role="button"
-        tabIndex={0}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        data-testid="date-range-input"
-        onClick={() => { if (!disabled) { setOpen(o => !o); setPicking('start'); } }}
-        onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !disabled) { e.preventDefault(); setOpen(o => !o); } }}
-        style={triggerStyle}
-      >
-        <span style={{ fontSize: 15, flexShrink: 0, display: 'flex', alignItems: 'center', color: theme.semantic.icon.muted }}>
-          &#x1F4C5;
-        </span>
-        <span style={{
-          color: startDate ? 'inherit' : theme.semantic.text.muted,
-          borderBottom: open && picking === 'start' ? `2px solid ${theme.semantic.fill.primary}` : '2px solid transparent',
-          paddingBottom: 1,
-        }}>
-          {startDate ? formatDate(startDate) : startPlaceholder}
-        </span>
-        <span style={{ color: theme.semantic.text.muted, fontSize: 12 }}>&#x2192;</span>
-        <span style={{
-          color: endDate ? 'inherit' : theme.semantic.text.muted,
-          borderBottom: open && picking === 'end' ? `2px solid ${theme.semantic.fill.primary}` : '2px solid transparent',
-          paddingBottom: 1,
-        }}>
-          {endDate ? formatDate(endDate) : endPlaceholder}
-        </span>
-      </div>
-
-      {open && (
-        <div style={{
-          position: 'absolute',
-          top: 'calc(100% + 6px)',
-          left: 0,
-          zIndex: 1000,
-          background: theme.semantic.surface.card,
-          borderRadius: theme.radius.md,
-          boxShadow: theme.shadow.menu,
-          border: `1px solid ${theme.semantic.border.subtle}`,
-          padding: 16,
-        }}>
-          <div style={{ marginBottom: 8 }}>
-            <span style={{
-              fontSize: 12, fontWeight: theme.fontWeight.medium,
-              color: theme.semantic.fill.primary, fontFamily: theme.fontFamily.sans,
-              textTransform: 'uppercase', letterSpacing: 0.5,
-            }}>
-              {picking === 'start' ? 'Select start date' : 'Select end date'}
-            </span>
-          </div>
-          <InlineCalendar
-            rangeStart={startDate}
-            rangeEnd={endDate}
-            hovered={picking === 'end' ? hovered : null}
-            onSelect={handleSelect}
-            onHover={setHovered}
-            onClear={(startDate || endDate) ? handleClear : undefined}
-          />
+    <div style={{ display: 'flex', flexDirection: 'column', gap: theme.space[4], ...style }}>
+      <div ref={containerRef} style={{ position: 'relative' }}>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-haspopup="dialog"
+          aria-expanded={open}
+          aria-invalid={error || undefined}
+          aria-describedby={helperId}
+          data-testid="date-range-input"
+          onClick={() => { if (!disabled) { setOpen(o => !o); setPicking('start'); } }}
+          onKeyDown={e => { if ((e.key === 'Enter' || e.key === ' ') && !disabled) { e.preventDefault(); setOpen(o => !o); } }}
+          style={triggerStyle}
+        >
+          <span style={{ fontSize: 15, flexShrink: 0, display: 'flex', alignItems: 'center', color: theme.semantic.icon.muted }}>
+            &#x1F4C5;
+          </span>
+          <span style={{
+            color: startDate ? 'inherit' : theme.semantic.text.muted,
+            borderBottom: open && picking === 'start' ? `2px solid ${theme.semantic.fill.primary}` : '2px solid transparent',
+            paddingBottom: 1,
+          }}>
+            {startDate ? formatDate(startDate) : startPlaceholder}
+          </span>
+          <span style={{ color: theme.semantic.text.muted, fontSize: 12 }}>&#x2192;</span>
+          <span style={{
+            color: endDate ? 'inherit' : theme.semantic.text.muted,
+            borderBottom: open && picking === 'end' ? `2px solid ${theme.semantic.fill.primary}` : '2px solid transparent',
+            paddingBottom: 1,
+          }}>
+            {endDate ? formatDate(endDate) : endPlaceholder}
+          </span>
         </div>
-      )}
+
+        {open && (
+          <div style={{
+            position: 'absolute',
+            top: 'calc(100% + 6px)',
+            left: 0,
+            zIndex: 1000,
+            background: theme.semantic.surface.card,
+            borderRadius: theme.radius.md,
+            boxShadow: theme.shadow.menu,
+            border: `1px solid ${theme.semantic.border.subtle}`,
+            padding: 16,
+          }}>
+            <div style={{ marginBottom: 8 }}>
+              <span style={{
+                fontSize: 12, fontWeight: theme.fontWeight.medium,
+                color: theme.semantic.fill.primary, fontFamily: theme.fontFamily.sans,
+                textTransform: 'uppercase', letterSpacing: 0.5,
+              }}>
+                {picking === 'start' ? 'Select start date' : 'Select end date'}
+              </span>
+            </div>
+            <InlineCalendar
+              rangeStart={startDate}
+              rangeEnd={endDate}
+              hovered={picking === 'end' ? hovered : null}
+              onSelect={handleSelect}
+              onHover={setHovered}
+              onClear={(startDate || endDate) ? handleClear : undefined}
+            />
+          </div>
+        )}
+      </div>
+      {helperText && <span id={helperId} style={helperStyle}>{helperText}</span>}
     </div>
   );
 }

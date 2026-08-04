@@ -3,6 +3,7 @@ import {
   useRef,
   useCallback,
   useEffect,
+  useLayoutEffect,
   type CSSProperties,
   type ReactNode,
   type Ref,
@@ -111,6 +112,22 @@ export function ContextMenu({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(menuRef, () => setOpen(false), open);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    const el = menuRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    let x = position.x;
+    let y = position.y;
+    if (rect.right > vw) x = Math.max(0, vw - rect.width);
+    if (rect.bottom > vh) y = Math.max(0, vh - rect.height);
+    if (x !== position.x || y !== position.y) {
+      setPosition({ x, y });
+    }
+  }, [open, position]);
 
   const handleClose = useCallback(() => {
     setOpen(false);

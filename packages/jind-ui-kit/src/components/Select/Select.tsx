@@ -3,6 +3,7 @@ import type { RadiusValue, SelectChangeDetails } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useControllableState } from '../../hooks/useControllableState';
 import { useClickOutside } from '../../hooks/useClickOutside';
+import { useAutoFlip } from '../../hooks/useAutoFlip';
 import { transition, resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
 export type SelectOption = string | { label: string; value: string; swatch?: string };
@@ -46,7 +47,9 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const autoId = useId();
+  const resolvedPlacement = useAutoFlip(dropdownRef, 'bottom', open);
   const listboxId = `${autoId}-listbox`;
   const helperId = helperText ? `${autoId}-helper` : undefined;
 
@@ -159,7 +162,9 @@ export function Select({
 
   const dropdownStyle: CSSProperties = {
     position: 'absolute',
-    top: 'calc(100% + 6px)',
+    ...(resolvedPlacement === 'bottom'
+      ? { top: 'calc(100% + 6px)' }
+      : { bottom: 'calc(100% + 6px)' }),
     left: 0,
     right: 0,
     borderRadius: theme.radius.md,
@@ -217,7 +222,7 @@ export function Select({
         </div>
 
         {open && (
-          <div id={listboxId} role="listbox" style={dropdownStyle}>
+          <div ref={dropdownRef} id={listboxId} role="listbox" style={dropdownStyle}>
             {options.map((opt, index) => {
               const optValue = getValue(opt);
               const optLabel = getLabel(opt);

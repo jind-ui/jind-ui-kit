@@ -9,6 +9,8 @@ const props = [
   { name: 'placeholder', type: 'string', default: "'Enter a message'", description: 'Placeholder text shown when empty' },
   { name: 'rows', type: 'number', default: '6', description: 'Number of visible text rows' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the textarea' },
   { name: 'onChange', type: '(value: string) => void', description: 'Called when the value changes' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
@@ -52,6 +54,33 @@ export function ComponentTextarea() {
           code={`<Textarea defaultValue="This textarea has pre-filled content." rows={4} />`}
         >
           <Textarea defaultValue="This textarea has pre-filled content." rows={4} />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Helper Text</h2>
+        <Preview
+          code={`<Textarea
+  placeholder="Write your bio"
+  helperText="Max 500 characters."
+  rows={3}
+/>`}
+        >
+          <Textarea placeholder="Write your bio" helperText="Max 500 characters." rows={3} />
+        </Preview>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<Textarea
+  placeholder="Write your feedback"
+  error
+  helperText="Feedback is required"
+  rows={3}
+/>`}
+        >
+          <Textarea placeholder="Write your feedback" error helperText="Feedback is required" rows={3} />
         </Preview>
       </div>
 

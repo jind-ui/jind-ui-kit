@@ -12,7 +12,8 @@ const props = [
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
   { name: 'size', type: "'sm' | 'md' | 'lg'", default: "'md'", description: 'Control height' },
   { name: 'label', type: 'string', description: 'Label text rendered above the select' },
-  { name: 'error', type: 'string', description: 'Error message shown below the select' },
+  { name: 'error', type: 'boolean', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the select' },
   { name: 'fullWidth', type: 'boolean', default: 'false', description: 'Stretch to fill the container width' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
@@ -77,14 +78,16 @@ export function ComponentNativeSelect() {
   options={countries}
   label="Country"
   placeholder="Choose your country"
-  error="This field is required"
+  error
+  helperText="This field is required"
 />`}
         >
           <NativeSelect
             options={countries}
             label="Country"
             placeholder="Choose your country"
-            error="This field is required"
+            error
+            helperText="This field is required"
           />
         </Preview>
       </div>

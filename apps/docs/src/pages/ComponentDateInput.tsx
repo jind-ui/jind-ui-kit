@@ -10,6 +10,8 @@ const dateProps = [
   { name: 'onChange', type: '(date: Date | null) => void', description: 'Called when a date is selected or cleared' },
   { name: 'placeholder', type: 'string', default: "'Pick a date'", description: 'Placeholder text when no value is set' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the input' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
 
@@ -20,6 +22,8 @@ const rangeProps = [
   { name: 'startPlaceholder', type: 'string', default: "'Start date'", description: 'Placeholder for start' },
   { name: 'endPlaceholder', type: 'string', default: "'End date'", description: 'Placeholder for end' },
   { name: 'disabled', type: 'boolean', default: 'false', description: 'Disabled state' },
+  { name: 'error', type: 'boolean', default: 'false', description: 'Shows red border and danger focus ring' },
+  { name: 'helperText', type: 'string', description: 'Helper or error text shown below the input' },
   { name: 'style', type: 'CSSProperties', description: 'Custom inline styles' },
 ];
 
@@ -116,6 +120,20 @@ const [end, setEnd] = useState<Date | null>(null);
   onChange={(s, e) => { setStart(s); setEnd(e); }}
 />`} />
         </div>
+      </div>
+
+      <div className="section">
+        <h2 className="section-title">With Error</h2>
+        <Preview
+          code={`<DateInput
+  error
+  helperText="Date is required"
+/>`}
+        >
+          <div style={{ maxWidth: 320 }}>
+            <DateInput error helperText="Date is required" />
+          </div>
+        </Preview>
       </div>
 
       <div className="section">
