@@ -119,7 +119,7 @@ export function SearchInput(
       <span style={searchIconStyle} aria-hidden="true">&#x1F50D;</span>
       <input
         ref={inputRef}
-        type="search"
+        type="text"
         value={value}
         placeholder={placeholder}
         disabled={disabled}

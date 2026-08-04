@@ -81,12 +81,12 @@ export function ComponentSlider() {
           The slider fills its parent width. Nest it inside a Grid to control sizing.
         </p>
         <Preview
-          code={`<Grid columns={2} gap={24}>
+          code={`<Grid columns={2} gap={32}>
   <Slider defaultValue={30} label="Left" showValue />
   <Slider defaultValue={70} label="Right" showValue />
 </Grid>`}
         >
-          <Grid columns={2} gap={24}>
+          <Grid columns={2} gap={32}>
             <Slider defaultValue={30} label="Left" showValue />
             <Slider defaultValue={70} label="Right" showValue />
           </Grid>
