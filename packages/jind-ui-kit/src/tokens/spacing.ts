@@ -1,0 +1,38 @@
+export const space: Record<number, number> = {
+  1: 2,
+  2: 4,
+  3: 6,
+  4: 8,
+  5: 10,
+  6: 12,
+  7: 16,
+  8: 20,
+  9: 24,
+  10: 32,
+  11: 40,
+  12: 48,
+};
+
+export const controlHeight: Record<string, number> = {
+  xs: 26,
+  sm: 32,
+  md: 40,
+  lg: 44,
+};
+
+export const controlPadding: Record<string, number> = {
+  field: 14,
+  button: 22,
+  chip: 14,
+};
+
+export const iconSize: Record<number, number> = {
+  14: 14,
+  16: 16,
+  18: 18,
+  20: 20,
+  24: 24,
+};
+
+export const stackGap = 12;
+export const fieldLabelGap = 8;

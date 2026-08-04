@@ -1,0 +1,27 @@
+{
+  "name": "jind-cli",
+  "version": "0.1.0",
+  "description": "CLI for selective Jind UI Kit component installation",
+  "type": "module",
+  "bin": {
+    "jind": "./dist/index.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch"
+  },
+  "dependencies": {
+    "picocolors": "^1.1.0"
+  },
+  "devDependencies": {
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "@types/node": "^22.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": ["jind", "ui-kit", "cli", "components"],
+  "license": "MIT"
+}

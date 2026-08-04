@@ -1,0 +1,8 @@
+{
+  "name": "jind",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ]
+}

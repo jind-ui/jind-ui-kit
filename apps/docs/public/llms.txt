@@ -1,0 +1,179 @@
+# Jind UI Kit
+
+Jind UI Kit is a TypeScript React component library with inline styles and design tokens.
+It uses a token-based theme system (not Tailwind CSS), Zustand for theme state, and supports
+both web (`jind-ui-kit`) and React Native (`jind-ui-kit-native`).
+
+Key features:
+- 64+ components, 11 hooks, 4 built-in themes
+- Zero-dependency (except optional `motion/react` for the Motion component)
+- React 19 patterns (ref-as-prop, no forwardRef)
+- Named exports only — no default exports
+- Polymorphic `as` prop on key components
+- CLI tool (`jind-cli`) for selective component installation
+
+## Install
+
+```bash
+npm install jind-ui-kit
+```
+
+## Quick Start
+
+```tsx
+import { JindProvider, Button, Text } from 'jind-ui-kit';
+
+function App() {
+  return (
+    <JindProvider>
+      <Text variant="body">Hello Jind</Text>
+      <Button variant="primary">Click me</Button>
+    </JindProvider>
+  );
+}
+```
+
+## Theme
+
+The theme is accessed via `useTheme()` and contains:
+- `theme.colors` — color ramps (gray, blue, red, green, amber, teal, purple)
+- `theme.semantic` — semantic tokens (text, fill, surface, border, icon)
+- `theme.space` — spacing scale
+- `theme.radius` — border radius tokens (xs, sm, md, lg, xl, full)
+- `theme.shadow` — elevation shadows
+- `theme.fontSize`, `theme.fontWeight`, `theme.fontFamily` — typography
+- `theme.duration`, `theme.easing` — animation timing
+
+## Components
+
+### Animation
+
+- [Motion](https://jind.dev/docs/motion.md): Animation wrapper using Framer Motion
+
+### Buttons
+
+- [Button](https://jind.dev/docs/button.md): Polymorphic button with variant, size, loading, and icon support
+- [ButtonGroup](https://jind.dev/docs/button-group.md): Groups buttons with connected or spaced layout
+- [IconButton](https://jind.dev/docs/icon-button.md): Icon-only button with tooltip support
+- [TextButton](https://jind.dev/docs/text-button.md): Minimal text-style button for inline actions
+
+### Content
+
+- [Carousel](https://jind.dev/docs/carousel.md): Horizontal content slider with arrows and dots
+- [TreeView](https://jind.dev/docs/tree-view.md): Hierarchical tree with expand/collapse and selection
+
+### Data-display
+
+- [Avatar](https://jind.dev/docs/avatar.md): User avatar with image, initials, or icon fallback
+- [Badge](https://jind.dev/docs/badge.md): Status badge with color variants
+- [Card](https://jind.dev/docs/card.md): Container card with header, body, and footer slots
+- [Chip](https://jind.dev/docs/chip.md): Compact element for tags, filters, or selections
+- [DataTable](https://jind.dev/docs/data-table.md): Enhanced table with sorting, filtering, and pagination
+- [Kbd](https://jind.dev/docs/kbd.md): Keyboard shortcut display badge
+- [ProgressStat](https://jind.dev/docs/progress-stat.md): Progress bar with label and percentage
+- [Skeleton](https://jind.dev/docs/skeleton.md): Loading placeholder with pulse animation
+- [StatusDot](https://jind.dev/docs/status-dot.md): Small colored dot for status indication
+- [Table](https://jind.dev/docs/table.md): Data table with sorting and row selection
+
+### Feedback
+
+- [Alert](https://jind.dev/docs/alert.md): Inline notification block with tone variants and dismiss
+- [EmptyState](https://jind.dev/docs/empty-state.md): Placeholder for empty content areas
+- [Spinner](https://jind.dev/docs/spinner.md): Loading spinner with size variants
+
+### Forms
+
+- [Checkbox](https://jind.dev/docs/checkbox.md): Checkbox with label and indeterminate state
+- [Combobox](https://jind.dev/docs/combobox.md): Searchable select with autocomplete and keyboard nav
+- [DateInput](https://jind.dev/docs/date-input.md): Date picker with calendar dropdown
+- [Field](https://jind.dev/docs/field.md): Form field wrapper with label and validation
+- [FileUploader](https://jind.dev/docs/file-uploader.md): Drag-and-drop file upload zone with progress
+- [Input](https://jind.dev/docs/input.md): Text input field with label, error, and helper text
+- [InputGroup](https://jind.dev/docs/input-group.md): Input with prefix/suffix addons and inline elements
+- [InputOTP](https://jind.dev/docs/input-otp.md): One-time password input with individual cells
+- [NativeSelect](https://jind.dev/docs/native-select.md): Browser-native select with custom styling
+- [Radio](https://jind.dev/docs/radio.md): Radio button group for single selection
+- [SearchInput](https://jind.dev/docs/search-input.md): Search input with icon and clear button
+- [Select](https://jind.dev/docs/select.md): Dropdown select with custom styling
+- [Slider](https://jind.dev/docs/slider.md): Range slider with label and value display
+- [Switch](https://jind.dev/docs/switch.md): Toggle switch for boolean values
+- [TagsInput](https://jind.dev/docs/tags-input.md): Multi-value tag input with keyboard support
+- [Textarea](https://jind.dev/docs/textarea.md): Multi-line text input with auto-resize
+
+### Interaction
+
+- [DayToggle](https://jind.dev/docs/day-toggle.md): Day-of-week toggle selector
+- [InteractionGroup](https://jind.dev/docs/interaction-group.md): Groups children to share interaction state
+
+### Layout
+
+- [Collapsible](https://jind.dev/docs/collapsible.md): Expand/collapse container primitive with animation
+- [Resizable](https://jind.dev/docs/resizable.md): Resizable split pane panels with drag handle
+- [ScrollArea](https://jind.dev/docs/scroll-area.md): Custom styled scrollbar wrapper
+
+### Navigation
+
+- [Accordion](https://jind.dev/docs/accordion.md): Expandable/collapsible content sections
+- [Breadcrumbs](https://jind.dev/docs/breadcrumbs.md): Navigation breadcrumb trail
+- [NavigationMenu](https://jind.dev/docs/navigation-menu.md): Horizontal nav bar with dropdown submenus
+- [Pagination](https://jind.dev/docs/pagination.md): Page navigation with numbered pages
+- [Sidebar](https://jind.dev/docs/sidebar.md): App layout sidebar with sections and collapse
+- [Stepper](https://jind.dev/docs/stepper.md): Multi-step progress indicator
+- [Tabs](https://jind.dev/docs/tabs.md): Tabbed navigation with panel content
+
+### Overlay
+
+- [AlertDialog](https://jind.dev/docs/alert-dialog.md): Confirmation dialog with cancel and confirm actions
+- [Banner](https://jind.dev/docs/banner.md): Full-width notification banner with variants
+- [CommandMenu](https://jind.dev/docs/command-menu.md): Command palette (Cmd+K) with search and keyboard nav
+- [ContextMenu](https://jind.dev/docs/context-menu.md): Right-click context menu with Portal rendering
+- [Drawer](https://jind.dev/docs/drawer.md): Slide-out panel from screen edge
+- [HoverCard](https://jind.dev/docs/hover-card.md): Rich content card appearing on hover
+- [Menu](https://jind.dev/docs/menu.md): Dropdown menu with items and dividers
+- [Modal](https://jind.dev/docs/modal.md): Dialog overlay with focus trap and backdrop
+- [Popover](https://jind.dev/docs/popover.md): Floating content panel triggered by click
+- [Toast](https://jind.dev/docs/toast.md): Temporary notification messages
+- [Tooltip](https://jind.dev/docs/tooltip.md): Floating tooltip on hover or focus
+
+### Utility
+
+- [Calendar](https://jind.dev/docs/calendar.md): Calendar grid for date picking
+- [Icon](https://jind.dev/docs/icon.md): SVG icon renderer
+- [MenuItem](https://jind.dev/docs/menu-item.md): Individual menu item component
+- [Toolbar](https://jind.dev/docs/toolbar.md): Horizontal toolbar container
+- [ToolbarButton](https://jind.dev/docs/toolbar-button.md): Button styled for toolbar use
+
+## Hooks
+
+- [useAnimateValue](https://jind.dev/docs/use-animate-value.md)
+- [useBreakpoint](https://jind.dev/docs/use-breakpoint.md)
+- [useClickOutside](https://jind.dev/docs/use-click-outside.md)
+- [useControllableState](https://jind.dev/docs/use-controllable-state.md)
+- [useControllableState.test](https://jind.dev/docs/use-controllable-state.test.md)
+- [useDisclosure](https://jind.dev/docs/use-disclosure.md)
+- [useDisclosure.test](https://jind.dev/docs/use-disclosure.test.md)
+- [useFocusTrap](https://jind.dev/docs/use-focus-trap.md)
+- [useInteractionGroup](https://jind.dev/docs/use-interaction-group.md)
+- [useMediaQuery](https://jind.dev/docs/use-media-query.md)
+- [useMergedRef](https://jind.dev/docs/use-merged-ref.md)
+- [usePressAnimation](https://jind.dev/docs/use-press-animation.md)
+- [usePrevious](https://jind.dev/docs/use-previous.md)
+- [useTransition](https://jind.dev/docs/use-transition.md)
+
+## Theming
+
+- Themes are JS objects, not CSS variables
+- Switch themes at runtime: `useThemeStore().setTheme('neon')`
+- Access tokens: `const theme = useTheme()`
+- Sub-theme nesting: `<ThemeOverride overrides={{...}}>`
+- Color ramps: gray, blue, red, green, amber, teal, purple
+- Sparse ramps: blue has 50, 100, 200, 500, 600, 700 (no 300/400)
+- Use `theme.colors` (not `theme.color`)
+
+## Important Patterns
+
+- All styles are inline (no CSS classes, no Tailwind)
+- Hover/active states use `useState` + mouse event handlers
+- Components accept `style` prop for overrides via `mergeStyles()`
+- No `forwardRef` — use `ref` as a regular prop (React 19)
+- Named exports only: `export function Button`, never `export default`
