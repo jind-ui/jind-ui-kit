@@ -1,4 +1,4 @@
-import { Input, InputGroup } from 'jind-ui-kit';
+import { Input, InputGroup, useTheme } from 'jind-ui-kit';
 import { Preview } from '../components/Preview';
 import { PropsTable } from '../components/PropsTable';
 import { ViewMarkdown } from '../components/ViewMarkdown';
@@ -14,6 +14,7 @@ const props = [
 ];
 
 export function ComponentInputGroup() {
+  const theme = useTheme();
   return (
     <div className="page-container">
       <div className="page-header">
@@ -85,13 +86,13 @@ export function ComponentInputGroup() {
         <h2 className="section-title">With Right Element</h2>
         <Preview
           code={`<InputGroup
-  rightElement={<span style={{ fontSize: 14 }}>&#x2709;</span>}
+  rightElement={<span style={{ fontSize: 13, color: 'var(--text-muted, #999)' }}>@</span>}
 >
   <Input placeholder="Email address" />
 </InputGroup>`}
         >
           <InputGroup
-            rightElement={<span style={{ fontSize: 14 }}>&#x2709;</span>}
+            rightElement={<span style={{ fontSize: 13, color: theme.semantic.text.muted }}>@</span>}
           >
             <Input placeholder="Email address" />
           </InputGroup>

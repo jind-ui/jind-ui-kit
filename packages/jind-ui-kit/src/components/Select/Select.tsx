@@ -3,7 +3,7 @@ import type { RadiusValue, SelectChangeDetails } from '../../types';
 import { useTheme } from '../../theme/ThemeProvider';
 import { useControllableState } from '../../hooks/useControllableState';
 import { useClickOutside } from '../../hooks/useClickOutside';
-import { resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
+import { transition, resolveRadiusStyle, type PerCornerRadiusProps } from '../../utils/styles';
 
 export type SelectOption = string | { label: string; value: string; swatch?: string };
 
@@ -13,6 +13,8 @@ export interface SelectProps extends PerCornerRadiusProps {
   placeholder?: string;
   options: SelectOption[];
   disabled?: boolean;
+  error?: boolean;
+  helperText?: string;
   onChange?: (value: string, details?: SelectChangeDetails) => void;
   radius?: RadiusValue;
   style?: CSSProperties;
@@ -32,6 +34,8 @@ export function Select({
   placeholder = 'Select',
   options,
   disabled = false,
+  error = false,
+  helperText,
   onChange,
   radius = 'sm',
   radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft,
@@ -42,7 +46,9 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const listboxId = useId();
+  const autoId = useId();
+  const listboxId = `${autoId}-listbox`;
+  const helperId = helperText ? `${autoId}-helper` : undefined;
 
   const radiusStyle = resolveRadiusStyle(radius, { radiusTopLeft, radiusTopRight, radiusBottomRight, radiusBottomLeft });
 
@@ -109,6 +115,13 @@ export function Select({
     }
   }
 
+  const wrapperStyle: CSSProperties = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.space[4],
+    ...style,
+  };
+
   const triggerStyle: CSSProperties = {
     display: 'flex',
     alignItems: 'center',
@@ -122,16 +135,22 @@ export function Select({
       : open
         ? theme.semantic.surface.card
         : theme.semantic.surface.subtle,
-    border: open
-      ? `2px solid ${theme.semantic.border.focus}`
-      : `1px solid ${theme.semantic.border.subtle}`,
-    boxShadow: open ? theme.focusRing.primary : theme.shadow.xs,
+    border: error
+      ? `2px solid ${theme.colors.red[600]}`
+      : open
+        ? `2px solid ${theme.semantic.border.focus}`
+        : `1px solid ${theme.semantic.border.subtle}`,
+    boxShadow: error
+      ? theme.focusRing.danger
+      : open
+        ? theme.focusRing.primary
+        : theme.shadow.xs,
     color: disabled ? theme.semantic.text.muted : theme.semantic.text.primary,
     fontFamily: theme.typeVariants.label.fontFamily,
     fontSize: theme.typeVariants.label.fontSize,
     fontWeight: theme.typeVariants.label.fontWeight,
     lineHeight: theme.typeVariants.label.lineHeight,
-    transition: `background-color ${theme.duration.fast}ms ${theme.easing.standard}, border-color ${theme.duration.fast}ms ${theme.easing.standard}, box-shadow ${theme.duration.fast}ms ${theme.easing.standard}`,
+    transition: transition('background-color', 'border-color', 'box-shadow'),
     opacity: disabled ? 0.6 : 1,
     cursor: disabled ? 'not-allowed' : 'pointer',
     boxSizing: 'border-box',
@@ -153,91 +172,105 @@ export function Select({
     padding: '4px 0',
   };
 
+  const helperStyle: CSSProperties = {
+    fontFamily: theme.fontFamily.sans,
+    fontSize: theme.fontSize[12],
+    color: error ? theme.colors.red[600] : theme.semantic.text.muted,
+  };
+
   return (
-    <div ref={containerRef} style={{ position: 'relative', width: '100%', ...style }}>
-      <div
-        role="combobox"
-        tabIndex={disabled ? -1 : 0}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={open ? listboxId : undefined}
-        aria-disabled={disabled || undefined}
-        data-testid="select-trigger"
-        style={triggerStyle}
-        onClick={() => {
-          if (!disabled) setOpen((prev) => !prev);
-        }}
-        onKeyDown={handleKeyDown}
-      >
-        <span style={{ flex: 1, color: selectedLabel ? 'inherit' : theme.semantic.text.muted }}>
-          {selectedLabel || placeholder}
-        </span>
-        <span
-          aria-hidden="true"
-          style={{
-            fontSize: 10,
-            color: theme.semantic.text.muted,
-            transform: `rotate(${open ? 180 : 0}deg)`,
-            transition: `transform ${theme.duration.base}ms ${theme.easing.standard}`,
+    <div style={wrapperStyle}>
+      <div ref={containerRef} style={{ position: 'relative', width: '100%' }}>
+        <div
+          role="combobox"
+          tabIndex={disabled ? -1 : 0}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={open ? listboxId : undefined}
+          aria-disabled={disabled || undefined}
+          aria-invalid={error || undefined}
+          aria-describedby={helperId}
+          data-testid="select-trigger"
+          style={triggerStyle}
+          onClick={() => {
+            if (!disabled) setOpen((prev) => !prev);
           }}
+          onKeyDown={handleKeyDown}
         >
-          &#x25BC;
-        </span>
-      </div>
-
-      {open && (
-        <div id={listboxId} role="listbox" style={dropdownStyle}>
-          {options.map((opt, index) => {
-            const optValue = getValue(opt);
-            const optLabel = getLabel(opt);
-            const isSelected = optValue === val;
-            const isHighlighted = index === highlightIndex;
-            const swatch = typeof opt !== 'string' ? opt.swatch : undefined;
-
-            return (
-              <div
-                key={optValue}
-                role="option"
-                aria-selected={isSelected}
-                data-testid="select-option"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 10,
-                  height: 40,
-                  padding: '0 14px',
-                  cursor: 'pointer',
-                  background: isHighlighted ? theme.semantic.surface.hover : 'transparent',
-                  fontSize: 14,
-                  fontFamily: theme.typeVariants.label.fontFamily,
-                }}
-                onMouseEnter={() => setHighlightIndex(index)}
-                onClick={() => {
-                  setVal(optValue);
-                  onChange?.(optValue, { reason: 'click' });
-                  setOpen(false);
-                }}
-              >
-                {swatch && (
-                  <span
-                    style={{
-                      width: 14,
-                      height: 14,
-                      borderRadius: '50%',
-                      background: swatch,
-                      flexShrink: 0,
-                    }}
-                  />
-                )}
-                <span style={{ flex: 1 }}>{optLabel}</span>
-                {isSelected && (
-                  <span style={{ color: theme.semantic.fill.primary }} aria-hidden="true">&#x2713;</span>
-                )}
-              </div>
-            );
-          })}
+          <span style={{ flex: 1, color: selectedLabel ? 'inherit' : theme.semantic.text.muted }}>
+            {selectedLabel || placeholder}
+          </span>
+          <span
+            aria-hidden="true"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              color: theme.semantic.text.muted,
+              transform: `rotate(${open ? 180 : 0}deg)`,
+              transition: transition('transform'),
+            }}
+          >
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </div>
-      )}
+
+        {open && (
+          <div id={listboxId} role="listbox" style={dropdownStyle}>
+            {options.map((opt, index) => {
+              const optValue = getValue(opt);
+              const optLabel = getLabel(opt);
+              const isSelected = optValue === val;
+              const isHighlighted = index === highlightIndex;
+              const swatch = typeof opt !== 'string' ? opt.swatch : undefined;
+
+              return (
+                <div
+                  key={optValue}
+                  role="option"
+                  aria-selected={isSelected}
+                  data-testid="select-option"
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    height: 40,
+                    padding: '0 14px',
+                    cursor: 'pointer',
+                    background: isHighlighted ? theme.semantic.surface.hover : 'transparent',
+                    fontSize: 14,
+                    fontFamily: theme.typeVariants.label.fontFamily,
+                  }}
+                  onMouseEnter={() => setHighlightIndex(index)}
+                  onClick={() => {
+                    setVal(optValue);
+                    onChange?.(optValue, { reason: 'click' });
+                    setOpen(false);
+                  }}
+                >
+                  {swatch && (
+                    <span
+                      style={{
+                        width: 14,
+                        height: 14,
+                        borderRadius: '50%',
+                        background: swatch,
+                        flexShrink: 0,
+                      }}
+                    />
+                  )}
+                  <span style={{ flex: 1 }}>{optLabel}</span>
+                  {isSelected && (
+                    <span style={{ color: theme.semantic.fill.primary }} aria-hidden="true">&#x2713;</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+      {helperText && <span id={helperId} style={helperStyle}>{helperText}</span>}
     </div>
   );
 }

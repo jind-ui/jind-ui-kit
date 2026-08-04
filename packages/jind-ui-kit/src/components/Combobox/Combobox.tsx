@@ -189,7 +189,8 @@ export function Combobox({
   };
 
   const chevronStyle: CSSProperties = {
-    fontSize: 10,
+    display: 'flex',
+    alignItems: 'center',
     color: theme.semantic.text.muted,
     transform: `rotate(${open ? 180 : 0}deg)`,
     transition: transition('transform'),
@@ -263,7 +264,11 @@ export function Combobox({
             }}
             onKeyDown={handleKeyDown}
           />
-          <span style={chevronStyle}>&#x25BC;</span>
+          <span style={chevronStyle}>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </span>
         </div>
 
         {open && (

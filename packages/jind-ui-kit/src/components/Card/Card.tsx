@@ -36,6 +36,7 @@ export function Card({
     background: theme.semantic.surface.card,
     ...radiusStyle,
     boxShadow: theme.shadow.card,
+    border: `1px solid ${theme.semantic.border.default}`,
     boxSizing: 'border-box',
     padding,
     ...style,
